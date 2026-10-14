@@ -128,7 +128,7 @@ gcloud run services proxy atlas --region us-central1 --port 8080
 **5. Read the logs**
 
 ```
-gcloud run services logs read atlas --region us-central1 --limit 12 --log-filter "textPayload:turn"
+gcloud run services logs read atlas --region us-central1 --limit 12 --log-filter "textPayload:turn" --freshness 30m
 ```
 
 **6. Twenty users at once**
