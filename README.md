@@ -190,4 +190,3 @@ gcloud artifacts repositories delete atlas --location us-central1
 - Places and routes come from free OpenStreetMap services that ask for light
   use. Fine for a workshop, not for production.
 - On a Mac with an M-series chip, build with `--platform linux/amd64`.
-- To rebuild the guide: `pip install playwright`, then `python guide/make_pdf.py`.
