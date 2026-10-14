@@ -1,0 +1,11 @@
+.git
+.env
+.venv
+__pycache__
+*.pyc
+README.md
+GUIDE.md
+guide
+loadtest.py
+sessions.py
+check.py

@@ -1,0 +1,3 @@
+# Shell scripts run inside a Linux container, so they keep Linux line endings
+# even when the repository is cloned on Windows.
+*.sh text eol=lf
