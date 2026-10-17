@@ -18,7 +18,9 @@ NAMES = ["Asha", "Bruno", "Chen", "Divya", "Emeka", "Farah", "Goran", "Hana", "I
 
 # What Cloud Run answers when every instance is full and a new one is not up yet.
 BUSY = {429, 500, 503}
+WAIT = 120    # seconds before giving up on one chat line
 turned_away = Counter()
+gave_up = Counter()
 
 
 def identity_token() -> str:
@@ -30,7 +32,12 @@ def identity_token() -> str:
 def say(url: str, headers: dict, session: str, text: str) -> tuple:
     """Send one chat line. Returns the instance that answered and what it said."""
     for attempt in range(4):
-        reply = requests.post(f"{url}/chat", json={"session": session, "text": text}, headers=headers, timeout=180)
+        try:
+            reply = requests.post(f"{url}/chat", json={"session": session, "text": text}, headers=headers, timeout=WAIT)
+        except requests.RequestException as problem:
+            # One stuck answer should cost one user, not the whole test.
+            gave_up[type(problem).__name__] += 1
+            return None, ""
         if reply.status_code not in BUSY:
             break
         turned_away[f"HTTP {reply.status_code}"] += 1
@@ -71,6 +78,8 @@ def main():
         print(f"  {instance:6} {'#' * count} {count}")
     for status, count in turned_away.items():
         print(f"turned away and asked again: {count} requests ({status})")
+    for problem, count in gave_up.items():
+        print(f"no answer within {WAIT}s, gave up: {count} requests ({problem})")
     print(f"remembered {sum(user['remembered'] for user in users)} of {args.users} users")
     print(f"a two-line chat took {times[0]:.1f}s at best, {times[len(times) // 2]:.1f}s in the middle, {times[-1]:.1f}s at worst")
 
